@@ -1,0 +1,11 @@
+{
+  "type": "gcn",
+  "hidden_dims": [
+    256,
+    128
+  ],
+  "learning_rate": 0.001,
+  "weight_decay": 1e-5,
+  "batch_size": 16,
+  "epochs": 100
+}
