@@ -1,3 +1,5 @@
+"""use focal loss from kornia library instead, this is the example usage of focal loss from kornia library, """
+
 import os
 import torch
 import torch.nn as nn
@@ -8,6 +10,7 @@ from torchmetrics.classification import MulticlassAccuracy, MulticlassF1Score
 from networks import GraphContourLabeller
 from datasets import GraphImageDataset
 from utils import read_config_file
+from kornia.losses import FocalLoss
 
 class GraphContourLabelerTrainer:
     def __init__(self, config_path):
@@ -29,7 +32,7 @@ class GraphContourLabelerTrainer:
         self.f1_score = MulticlassF1Score(num_classes=18).to(self.device)
         
 
-        self.criterion = nn.CrossEntropyLoss()
+        self.criterion = FocalLoss(alpha=0.25, gamma=2.0, reduction='mean')
 
     def train_epoch(self, train_loader):
         """
@@ -53,7 +56,7 @@ class GraphContourLabelerTrainer:
             
             outputs = self.model(batch)
 
-            loss = self.criterion(outputs, batch.y)
+            loss = self.criterion(outputs, batch.y.argmax(dim=-1))
             
             loss.backward()
             self.optimizer.step()
@@ -86,7 +89,7 @@ class GraphContourLabelerTrainer:
 
         train_loader = DataLoader(
             train_dataset, 
-            batch_size=self.config.get('batch_size', 16), 
+            batch_size=self.config.get('batch_size', 8), 
             shuffle=True
         )
 
@@ -108,7 +111,6 @@ class GraphContourLabelerTrainer:
             print(f"Epoch {epoch + 1}")
             print("Training Metrics:", train_metrics)
             print("-" * 50)
-    
             epoch += 1
 
 
