@@ -1,0 +1,9 @@
+torch
+torchvision
+torch-geometric
+torchmetrics
+tqdm
+opencv-python
+numpy
+kornia
+scipy
